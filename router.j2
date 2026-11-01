@@ -1,0 +1,32 @@
+!==================================================
+!ROUTER CONFIGURATION TEMPLATE
+!==================================================
+hostname {{ hostname }}
+!
+{%- for acl in acl_list %}
+ip access-list extended {{ acl.name }}
+{%- for rule in acl.rules %}
+{%- if rule.description | default(' ') | trim %}
+ remark {{ rule.description }}
+{%- endif %}
+ {{ rule.rule_number }} {{ rule.action }} {{ rule.protocol }} {{ rule.source| wildcard }} {{ rule.destination | wildcard }}
+ {%- endfor %}
+!
+ {%- endfor %}
+{%- for intf in interfaces %}
+interface {{ intf.name }} 
+ description {{ intf.description }}
+ ip address {{ intf.ip_addr }} {{ intf.subnet }}
+ no shutdown
+{%- if intf.acl_in is defined %}
+ ip access-group {{ intf.acl_in }} in
+{%- endif %}
+!
+{%- endfor %}
+{%- if static_routes %}
+{%- for static in static_routes %}
+ip route {{ static.network }} {{ static.mask }} {{ static.next_hop }}
+{%- endfor %}
+!
+{%- endif %}
+end

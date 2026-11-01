@@ -1,0 +1,119 @@
+devices:
+  - hostname: "al-khaleej-R01"
+    site: "Al-Khaleej-A01"
+    device_type: "cisco_ios"
+    mgmt_ip: "172.16.1.2"
+    enabled: true
+    interfaces:
+      - name: "GigabitEthernet0/1"
+        description: "Up_Link to Branch01"
+        ip_addr: "192.168.20.2"
+        subnet: "255.255.255.240"
+        acl_in: "social_media"
+      - name: "GigabitEthernet0/2"
+        description: "Up_Link to Branch02"
+        ip_addr: "192.168.19.2"
+        subnet: "255.255.255.240"
+        acl_in: "SSH"
+      - name: "GigabitEthernet0/3"
+        description: "Local LAN"
+        ip_addr: "10.10.10.1"
+        subnet: "255.255.255.0"
+    acl_list:
+      - name: "social_media"
+        rules:
+          - rule_number: 100
+            action: "deny"
+            protocol: "tcp"
+            source: "10.0.0.0/8"
+            destination: "192.168.10.0/24"
+            description: "Block social media servers"
+          - rule_number: 110
+            action: "deny"
+            protocol: "udp"
+            source: "10.0.0.0/8"
+            destination: "192.168.10.0/24"
+            description: "Block social media UDP"
+          - rule_number: 120
+            action: "permit"
+            protocol: "ip"
+            source: "any"
+            destination: "any"
+            description: "Allow everything else"
+      - name: "SSH"
+        rules:
+          - rule_number: 10
+            action: "permit"
+            protocol: "tcp"
+            source: "172.16.1.0/24"
+            destination: "any"
+            description: "SSH from management network"
+          - rule_number: 20
+            action: "deny"
+            protocol: "tcp"
+            source: "any"
+            destination: "any"
+            description: "Deny all other SSH"
+    static_routes:
+      - network: "192.168.50.0"
+        mask: "255.255.255.0"
+        next_hop: "192.168.20.1"
+      - network: "192.168.60.0"
+        mask: "255.255.255.0"
+        next_hop: "192.168.19.1"
+
+  - hostname: "Sulimaniyah-R01"
+    site: "Sulimaniyah-A02"
+    device_type: "cisco_ios"
+    mgmt_ip: "172.16.1.6"
+    enabled: true
+    interfaces:
+      - name: "GigabitEthernet0/1"
+        description: "Up_Link to Core"
+        ip_addr: "192.168.30.2"
+        subnet: "255.255.255.240"
+        acl_in: "web_filter"
+      - name: "GigabitEthernet0/2"
+        description: "Local LAN"
+        ip_addr: "192.168.31.2"
+        subnet: "255.255.255.240"
+    acl_list:
+      - name: "web_filter"
+        rules:
+          - rule_number: 10
+            action: "deny"
+            protocol: "tcp"
+            source: "192.168.31.0/28"
+            destination: "172.20.0.0/16"
+            description: "Block access to restricted servers"
+          - rule_number: 20
+            action: "permit"
+            protocol: "ip"
+            source: "any"
+            destination: "any"
+            description: "Allow everything else"
+
+  - hostname: "Olaya-R01"
+    site: "Olaya-A03"
+    device_type: "cisco_ios"
+    mgmt_ip: "172.16.1.10"
+    enabled: false
+    interfaces:
+      - name: "GigabitEthernet0/1"
+        description: "Up_Link to Core"
+        ip_addr: "192.168.40.2"
+        subnet: "255.255.255.240"
+        acl_in: "SSH"
+    acl_list:
+      - name: "SSH"
+        rules:
+          - rule_number: 10
+            action: "permit"
+            protocol: "tcp"
+            source: "172.16.1.0/24"
+            destination: "any"
+            description: "SSH from management network"
+    static_routes:
+      - network: "192.168.70.0"
+        mask: "255.255.255.0"
+        next_hop: "192.168.40.1"

@@ -1,0 +1,9 @@
+net_env/
+__pycache__/
+*.bak
+*.swp
+generated_configs/
+router_reference/
+test_run/
+branch_builds/
+
